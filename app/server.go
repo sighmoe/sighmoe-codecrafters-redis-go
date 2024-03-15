@@ -35,7 +35,7 @@ func HandleConnection(conn net.Conn) {
 		fmt.Printf("\nReading from connection...\n")
 		_, err := conn.Read(buf)
 		if err != nil {
-			fmt.Printf("\nGot err reading from connection: %v\n", err.Error())
+			fmt.Printf("\nGot err reading from connection: %v. Terminating connection...\n", err.Error())
 			break
 		}
 		fmt.Printf("Read\n\n%s\nfrom the connection\n", string(buf))
