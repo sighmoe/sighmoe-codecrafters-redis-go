@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	StoreInit()
 	l, err := net.Listen("tcp", "0.0.0.0:6379")
 	if err != nil {
 		fmt.Println("Failed to bind to port 6379")
@@ -71,6 +72,18 @@ func HandleRequest(r RedisRequest, conn net.Conn) {
 		str := strings.Join(r.args, "")
 		response := fmt.Sprintf("$%v\r\n%s\r\n", len(str), str)
 		conn.Write([]byte(response))
+	case "set":
+		val := strings.Join(r.args[1:], "")
+		Set(r.args[0], val)
+		conn.Write([]byte("+OK\r\n"))
+	case "get":
+		val, ok := Get(r.args[0])
+		if !ok {
+			conn.Write([]byte("$-1\r\n"))
+		} else {
+			response := fmt.Sprintf("$%v\r\n%s\r\n", len(val), val)
+			conn.Write([]byte(response))
+		}
 	default:
 		panic(fmt.Sprintf("Received unknown command: %s", r.command))
 
